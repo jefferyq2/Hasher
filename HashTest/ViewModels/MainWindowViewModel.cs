@@ -23,7 +23,7 @@ namespace HashTest.ViewModels
             
         }
 
-        private const int BUFFER_SIZE = 524288+524288;
+        private const int BUFFER_SIZE = 8192;
 
         [ObservableProperty]
         private string fileName = string.Empty;
@@ -40,6 +40,7 @@ namespace HashTest.ViewModels
 
         [ObservableProperty]
         private string blake2bHashValue = string.Empty;
+
         [ObservableProperty]
         private string blake3MTHashValue = string.Empty;
 
@@ -67,11 +68,24 @@ namespace HashTest.ViewModels
                 {
                     await GetMd5Hash();
                 });
-                //GetMd5Hash();
-                //GetSHA256Hash();
-                //GetBlake2bHash();
-                //GetBlake3Hash();
-                //GetBlake3MTHash();
+
+                //Task.Run(async () =>
+                //{
+                //    await GetSHA256Hash();
+                //})
+                //Task.Run(async () =>
+                //{
+                //    await GetBlake2bHash();
+                //});
+                Task.Run(async () =>
+                {
+                    await GetBlake3Hash();
+                });
+                Task.Run(async () =>
+                {
+                    await GetBlake3MTHash();
+                });
+
             }
         }
 
@@ -85,7 +99,7 @@ namespace HashTest.ViewModels
             Md5HashValue = BitConverter.ToString(hash).Replace("-", "").ToLower();
             Md5HashValue += "\n Time elapsed : " + elapsedMs.ToString() + "ms.";
         }
-        private void GetSHA256Hash()
+        private async Task GetSHA256Hash()
         {
             Stopwatch? watch = System.Diagnostics.Stopwatch.StartNew();
             var hash = CalculateSHA256HashForFile(FileName);
@@ -95,7 +109,7 @@ namespace HashTest.ViewModels
             SHA256HashValue = BitConverter.ToString(hash).Replace("-", "").ToLower();
             SHA256HashValue += "\n Time elapsed : " + elapsedMs.ToString() + "ms.";
         }
-        private void GetBlake2bHash()
+        private async Task GetBlake2bHash()
         {
             Stopwatch? watch = System.Diagnostics.Stopwatch.StartNew();
             var hash = CalculateBlake2bHashForFile(FileName);
@@ -105,7 +119,7 @@ namespace HashTest.ViewModels
             Blake2bHashValue = BitConverter.ToString(hash).Replace("-", "").ToLower();
             Blake2bHashValue += "\n Time elapsed : " + elapsedMs.ToString() + "ms.";
         }
-        private void GetBlake3Hash()
+        private async Task GetBlake3Hash()
         {
             Stopwatch? watch = System.Diagnostics.Stopwatch.StartNew();
 
@@ -116,7 +130,7 @@ namespace HashTest.ViewModels
             Blake3HashValue = blake3hash.ToString();
             Blake3HashValue += "\n Time elapsed : " + elapsedMs.ToString() + "ms.";
         }
-        private void GetBlake3MTHash()
+        private async Task GetBlake3MTHash()
         {
             Stopwatch? watch = System.Diagnostics.Stopwatch.StartNew();
 
@@ -136,18 +150,15 @@ namespace HashTest.ViewModels
             using (var digestStream = new DigestStream(fileStream, md5Digest, null))
             {
 
-                byte[] buffer = new byte[BUFFER_SIZE]; // Adjust buffer size as needed
-                //long totalBytesRead = 0;
+                byte[] buffer = new byte[GetBufferSize(fileStream.Length/(1024*1024))]; // Adjust buffer size as needed
                 long bytesRead;
                 do
                 {
                     bytesRead = digestStream.Read(buffer, 0, buffer.Length);
-                    //totalBytesRead += bytesRead;
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
                     {
                         MD5Progress = (double)fileStream.Position / fileStream.Length * 100;
                     });
-                    //MD5Progress = (double)fileStream.Position/fileStream.Length*100;
                 } while (bytesRead > 0);
             }
 
@@ -162,7 +173,7 @@ namespace HashTest.ViewModels
             using (var fileStream = File.OpenRead(filePath))
             using (var digestStream = new DigestStream(fileStream, sha256Digest, null))
             {
-                byte[] buffer = new byte[BUFFER_SIZE]; // Adjust buffer size as needed
+                byte[] buffer = new byte[GetBufferSize(fileStream.Length / (1024 * 1024))]; // Adjust buffer size as needed
                 int bytesRead;
                 do
                 {
@@ -181,7 +192,7 @@ namespace HashTest.ViewModels
             using (var fileStream = File.OpenRead(filePath))
             using (var digestStream = new DigestStream(fileStream, blake2bDigest, null))
             {
-                byte[] buffer = new byte[BUFFER_SIZE]; // Adjust buffer size as needed
+                byte[] buffer = new byte[GetBufferSize(fileStream.Length / (1024 * 1024))]; // Adjust buffer size as needed
                 int bytesRead;
                 do
                 {
@@ -198,7 +209,7 @@ namespace HashTest.ViewModels
             using (var blake3 = Blake3.Hasher.New())
             using (var fileStream = File.OpenRead(filePath))
             {
-                byte[] buffer = new byte[BUFFER_SIZE]; // Adjust buffer size as needed
+                byte[] buffer = new byte[GetBufferSize(fileStream.Length / (1024 * 1024))]; // Adjust buffer size as needed
                 int bytesRead;
                 do
                 {
@@ -214,7 +225,7 @@ namespace HashTest.ViewModels
             using (var blake3 = Blake3.Hasher.New())
             using (var fileStream = File.OpenRead(filePath))
             {
-                byte[] buffer = new byte[BUFFER_SIZE]; // Adjust buffer size as needed
+                byte[] buffer = new byte[GetBufferSize(fileStream.Length / (1024 * 1024))]; // Adjust buffer size as needed
                 int bytesRead;
                 do
                 {
@@ -226,9 +237,31 @@ namespace HashTest.ViewModels
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fileSize">Gets fileSize in MBs</param>
+        /// <returns></returns>
+        private int GetBufferSize(long fileSize)
+        {
+            if(fileSize < 1)
+            {
+                return 512 * 512;
+            }
+            else if(fileSize < 1024)
+            {
+                return 1024 * 1024;
+            }
+            else if(fileSize >= 1024)
+            {
+                return 1024 * 1024 * 8;
+            }
+            return 0;
+        }
+
         partial void OnMD5ProgressChanged(double value)
         {
-            System.Diagnostics.Debug.WriteLine(MD5Progress.ToString());
+            //System.Diagnostics.Debug.WriteLine(MD5Progress.ToString());
         }
     }
 }

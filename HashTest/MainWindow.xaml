@@ -15,8 +15,8 @@
             
         </ui:TitleBar>
         <StackPanel Grid.Row="1"
-HorizontalAlignment="Center"
-VerticalAlignment="Center">
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
             
         <ui:Button           
             Command="{Binding HashFileCommand}">
@@ -25,7 +25,7 @@ VerticalAlignment="Center">
             <Label Content="File name : "/>
             <TextBlock Text="{Binding FileName}"></TextBlock>
             <Label Content="MD5"/>
-            <ProgressBar Minimum="0" Maximum="100" Value="{Binding MD5Progress,PresentationTraceSources.TraceLevel=High}"/>
+            <ProgressBar Minimum="0" Maximum="100" Value="{Binding MD5Progress}"/>
             <TextBlock Text="{Binding Md5HashValue}"></TextBlock>
             <Label Content="SHA256"/>
             <TextBlock Text="{Binding SHA256HashValue}"></TextBlock>
