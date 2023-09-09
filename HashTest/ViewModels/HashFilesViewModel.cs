@@ -32,6 +32,9 @@ namespace Hasher.ViewModels
         private string currentFileName = "Current Progress";
 
         [ObservableProperty]
+        private List<FileData> files = new List<FileData>();
+
+        [ObservableProperty]
         private string fileNames = string.Empty;
 
         private List<string> fileHashWithNames = new List<string>();
@@ -42,6 +45,7 @@ namespace Hasher.ViewModels
             fileHashWithNames.Clear();
             FileNames = string.Empty;
             CurrentFileName = "Current Progress";
+            Files.Clear();
 
             var dialog = new Microsoft.Win32.OpenFileDialog();
             dialog.Multiselect = true;
@@ -64,27 +68,36 @@ namespace Hasher.ViewModels
 
         private async Task CreateHashForListOfFiles(string[] filePaths, string extension, string hashingAlgorithm)
         {
-            int counter = 0;
-            foreach (var filePath in filePaths)
+            double counter = 0;
+            foreach (string filePath in filePaths)
             {
                 //TODO : Append hash and filename to the .hash file.
                 FileData fileData = new FileData(filePath);
+                Files.Add(fileData);
+            }
 
+            foreach(FileData file in Files)
+            {
                 hashingAlgorithm = "Blake3MultiThreaded";
 
-                string hash = CreateHashForFile(fileData, hashingAlgorithm);
+                string hash = CreateHashForFile(file, hashingAlgorithm);
 
 
-                fileHashWithNames.Add(hash + "\t" + fileData.Name);
+                fileHashWithNames.Add(hash + "\t" + file.RelativePath);
                 FileNames += fileHashWithNames[^1] + "\n";
-                counter++;
-                OverallProgress = ((double)counter/filePaths.Length) * 100;
+
+                var totalSize = Files.Sum(f => f.SizeInKBs);
+                counter += file.SizeInKBs;
+                //OverallProgress = ((double)counter / filePaths.Length) * 100;
+                OverallProgress = ((double)counter / totalSize) * 100;
+
             }
         }
 
         private string CreateHashForFile(FileData fileData, string hashingAlgorithm)
         {
-            CurrentFileName = "Current Progress = " + fileData.Name;
+            CurrentFileName = "Current Progress = " + fileData.RelativePath;
+            if (fileData.DoesFileExist() == false) return "";
             switch (hashingAlgorithm)
             {
                 case "MD5":

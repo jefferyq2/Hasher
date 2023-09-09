@@ -1,89 +1,79 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using Blake3;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Digests;
+using Org.BouncyCastle.Crypto.IO;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Org.BouncyCastle;
-using System.IO;
-using Org.BouncyCastle.Crypto.Digests;
-using Org.BouncyCastle.Crypto.Generators;
-using Org.BouncyCastle.Crypto.IO;
-using Org.BouncyCastle.Crypto;
-using System.Diagnostics;
-using Blake3;
-using System.Data;
 
-namespace HashTest.ViewModels
+namespace HasherBenchmark
 {
-    public partial class MainWindowViewModel : ObservableObject
+    internal class Hasher
     {
+        private const int NUMBER_OF_ITERATIONS = 3;
+        //public Hasher()
+        //{
+        //    //DataColumn Run1 = new DataColumn("Run1", typeof(double));
+        //    //DataColumn Run2 = new DataColumn("Run2", typeof(double));
+        //    //DataColumn Run3 = new DataColumn("Run3", typeof(double));
+        //    //DataColumn Run4 = new DataColumn("Run4", typeof(double));
+        //    //DataColumn Run5 = new DataColumn("Run5", typeof(double));
 
-        [ObservableProperty]
-        private string fileName = string.Empty;
+        //    //dataTable.Columns.Add(Run1);
+        //    //dataTable.Columns.Add(Run2);
+        //    //dataTable.Columns.Add(Run3);
+        //    //dataTable.Columns.Add(Run4);
+        //    //dataTable.Columns.Add(Run5);
+        //}
 
-        [ObservableProperty]
-        private double fileSize = 0;
+        //DataTable dataTable = new DataTable();
 
-        [ObservableProperty]
-        private int bufferSizeInKBs = 0;
+        public string FileName { get; set; } = string.Empty;
 
-        [ObservableProperty]
-        private int bufferSize = 0;
+        public int BufferSizeInKBs { get; set; } = 0;
 
-        [ObservableProperty]
-        private string md5HashValue = string.Empty;
+        public double FileSize { get; set; } = 0;
 
-        [ObservableProperty]
-        private string blake3HashValue = string.Empty;
+        public int BufferSize { get; set; } = 0;
 
-        [ObservableProperty]
-        private string sHA256HashValue = string.Empty;
+        public string Md5HashValue { get; set; } = string.Empty;
 
-        [ObservableProperty]
-        private string blake2bHashValue = string.Empty;
+        public string Blake3HashValue { get; set; } = string.Empty;
 
-        [ObservableProperty]
-        private string blake3MTHashValue = string.Empty;
+        public string SHA256HashValue { get; set; } = string.Empty;
 
-        [ObservableProperty]
-        private double mD5Progress = 0;
+        public string Blake2bHashValue { get; set; } = string.Empty;
 
-        [ObservableProperty]
-        private double sHA256Progress = 0;
+        public string Blake3MTHashValue { get; set; } = string.Empty;
 
-        [ObservableProperty]
-        private double blake2bProgress = 0;
+        public double MD5Progress { get; set; } = 0;
 
-        [ObservableProperty]
-        private double blake3Progress = 0;
+        public double SHA256Progress { get; set; } = 0;
 
-        [ObservableProperty]
-        private double blake3MTProgress = 0;
+        public double Blake2bProgress { get; set; } = 0;
 
+        public double Blake3Progress { get; set; } = 0;
 
-        [RelayCommand]
-        private void GetBenchmark()
+        public double Blake3MTProgress { get; set; } = 0;
+
+        public void HashFile(string fileName)
         {
-            //var x = dataTable.Rows;
-        }
-
-        [RelayCommand]
-        private void HashFile()
-        {
-            var dialog = new Microsoft.Win32.OpenFileDialog();
-            dialog.FileName = "Document"; // Default file name
+            //var dialog = new Microsoft.Win32.OpenFileDialog();
+            //dialog.FileName = "Document"; // Default file name
                                           //dialog.DefaultExt = ".txt"; // Default file extension
                                           //dialog.Filter = "Text documents (.txt)|*.txt";
 
-            bool? result = dialog.ShowDialog();
+            //bool? result = dialog.ShowDialog();
 
             // Process open file dialog box results
-            if (result == true)
-            {
+            //if (result == true)
+            //{
                 // Open document
-                FileName = dialog.FileName;
+                FileName = fileName;
 
                 FileInfo fileInfo = new FileInfo(FileName);
                 if (fileInfo.Exists == true) FileSize = (double)fileInfo.Length / (1024 * 1024);
@@ -94,12 +84,12 @@ namespace HashTest.ViewModels
                 Task.Run(async () =>
                 {
                     await GetMd5Hash();
-                    //await GetSHA256Hash();
-                    //await GetBlake2bHash();
+                    await GetSHA256Hash();
+                    await GetBlake2bHash();
                     await GetBlake3Hash();
                     await GetBlake3MTHash();
                 });
-            }
+           // }
         }
 
         private async Task GetMd5Hash()
@@ -108,10 +98,13 @@ namespace HashTest.ViewModels
             long elapsedMs = 0;
             byte[] hash = null;
 
-            watch = System.Diagnostics.Stopwatch.StartNew();
-            hash = CalculateMD5HashForFile(FileName);
-            watch.Stop();
-            elapsedMs = watch.ElapsedMilliseconds;
+            for (int i = 0; i < NUMBER_OF_ITERATIONS; i++)
+            {
+                watch = System.Diagnostics.Stopwatch.StartNew();
+                hash = CalculateMD5HashForFile(FileName);
+                watch.Stop();
+                elapsedMs = watch.ElapsedMilliseconds;
+            }
 
             Md5HashValue = BitConverter.ToString(hash).Replace("-", "").ToLower();
             Md5HashValue += "\n Time elapsed : " + ((double)elapsedMs / 1000).ToString() + "s.";
@@ -122,10 +115,13 @@ namespace HashTest.ViewModels
             long elapsedMs = 0;
             byte[] hash = null;
 
-            watch = System.Diagnostics.Stopwatch.StartNew();
-            hash = CalculateSHA256HashForFile(FileName);
-            watch.Stop();
-            elapsedMs = watch.ElapsedMilliseconds;
+            for (int i = 0; i < NUMBER_OF_ITERATIONS; i++)
+            {
+                watch = System.Diagnostics.Stopwatch.StartNew();
+                hash = CalculateSHA256HashForFile(FileName);
+                watch.Stop();
+                elapsedMs = watch.ElapsedMilliseconds;
+            }
 
 
             SHA256HashValue = BitConverter.ToString(hash).Replace("-", "").ToLower();
@@ -137,10 +133,14 @@ namespace HashTest.ViewModels
             long elapsedMs = 0;
             byte[] hash = null;
 
-            watch = System.Diagnostics.Stopwatch.StartNew();
-            hash = CalculateBlake2bHashForFile(FileName);
-            watch.Stop();
-            elapsedMs = watch.ElapsedMilliseconds;
+            for (int i = 0; i < NUMBER_OF_ITERATIONS; i++)
+            {
+
+                watch = System.Diagnostics.Stopwatch.StartNew();
+                hash = CalculateBlake2bHashForFile(FileName);
+                watch.Stop();
+                elapsedMs = watch.ElapsedMilliseconds;
+            }
 
 
             Blake2bHashValue = BitConverter.ToString(hash).Replace("-", "").ToLower();
@@ -152,10 +152,13 @@ namespace HashTest.ViewModels
             long elapsedMs = 0;
             Hash blake3hash = new Hash();
 
-            watch = System.Diagnostics.Stopwatch.StartNew();
-            blake3hash = CalculateBlake3HashForFile(FileName);
-            watch.Stop();
-            elapsedMs = watch.ElapsedMilliseconds;
+            for (int i = 0; i < NUMBER_OF_ITERATIONS; i++)
+            {
+                watch = System.Diagnostics.Stopwatch.StartNew();
+                blake3hash = CalculateBlake3HashForFile(FileName);
+                watch.Stop();
+                elapsedMs = watch.ElapsedMilliseconds;
+            }
 
 
             Blake3HashValue = blake3hash.ToString();
@@ -167,10 +170,13 @@ namespace HashTest.ViewModels
             long elapsedMs = 0;
             Hash blake3hash = new Hash();
 
-            watch = System.Diagnostics.Stopwatch.StartNew();
-            blake3hash = CalculateBlake3MTHashForFile(FileName);
-            watch.Stop();
-            elapsedMs = watch.ElapsedMilliseconds;
+            for (int i = 0; i < NUMBER_OF_ITERATIONS; i++)
+            {
+                watch = System.Diagnostics.Stopwatch.StartNew();
+                blake3hash = CalculateBlake3MTHashForFile(FileName);
+                watch.Stop();
+                elapsedMs = watch.ElapsedMilliseconds;
+            }
 
             Blake3MTHashValue = blake3hash.ToString();
             Blake3MTHashValue += "\n Time elapsed : " + ((double)elapsedMs / 1000).ToString() + "s.";
@@ -189,7 +195,10 @@ namespace HashTest.ViewModels
                 do
                 {
                     bytesRead = digestStream.Read(buffer, 0, buffer.Length);
+                    //System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    //{
                     MD5Progress = (double)fileStream.Position / fileStream.Length * 100;
+                    //});
                 } while (bytesRead > 0);
             }
 
@@ -279,7 +288,7 @@ namespace HashTest.ViewModels
         /// </summary>
         /// <param name="fileSize">Gets fileSize in MBs</param>
         /// <returns></returns>
-        private int GetBufferSize(double fileSize)
+        public int GetBufferSize(double fileSize)
         {
             if (fileSize <= 1)
             {
@@ -307,6 +316,5 @@ namespace HashTest.ViewModels
             }
 
         }
-
     }
 }

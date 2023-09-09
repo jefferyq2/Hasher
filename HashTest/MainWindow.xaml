@@ -17,24 +17,41 @@
         <StackPanel Grid.Row="1"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center">
-            
-        <ui:Button           
-            Command="{Binding HashFileCommand}">
-            Hash it
-        </ui:Button>
-            <Label Content="File name : "/>
-            <TextBlock Text="{Binding FileName}"></TextBlock>
+
+            <WrapPanel>
+                <ui:Button Command="{Binding HashFileCommand}"
+                           Margin="5px">
+                    Hash single file
+                </ui:Button>
+                <ui:Button Command="{Binding GetBenchmarkCommand}" 
+                           Content="Get Benchmark"
+                           Margin="5px"/>
+            </WrapPanel>    
+            <WrapPanel>
+                <Label Content="File name : "/>
+                <TextBlock Text="{Binding FileName}"/>
+            </WrapPanel>
+            <WrapPanel>
+                <Label Content="File size in MBs: "/>
+                <TextBlock Text="{Binding FileSize}"/>
+                <Label Content="    Buffer size in KBs : "/>
+                <TextBlock Text="{Binding BufferSizeInKBs}"/>
+            </WrapPanel>
             <Label Content="MD5"/>
-            <ProgressBar Minimum="0" Maximum="100" Value="{Binding MD5Progress}"/>
-            <TextBlock Text="{Binding Md5HashValue}"></TextBlock>
+            <ProgressBar Width="500px" Minimum="0" Maximum="100" Value="{Binding MD5Progress}"/>
+            <TextBlock Text="{Binding Md5HashValue}"/>
             <Label Content="SHA256"/>
-            <TextBlock Text="{Binding SHA256HashValue}"></TextBlock>
+            <ProgressBar Width="500px" Minimum="0" Maximum="100" Value="{Binding SHA256Progress}"/>
+            <TextBlock Text="{Binding SHA256HashValue}"/>
             <Label Content="Blake2b"/>
-            <TextBlock Text="{Binding Blake2bHashValue}"></TextBlock>
+            <ProgressBar Width="500px" Minimum="0" Maximum="100" Value="{Binding Blake2bProgress}"/>
+            <TextBlock Text="{Binding Blake2bHashValue}"/>
             <Label Content="Blake3"/>
-            <TextBlock Text="{Binding Blake3HashValue}"></TextBlock>
+            <ProgressBar Width="500px" Minimum="0" Maximum="100" Value="{Binding Blake3Progress}"/>
+            <TextBlock Text="{Binding Blake3HashValue}"/>
             <Label Content="Blake3MultiThread"/>
-            <TextBlock Text="{Binding Blake3MTHashValue}"></TextBlock>
+            <ProgressBar Width="500px" Minimum="0" Maximum="100" Value="{Binding Blake3MTProgress}"/>
+            <TextBlock Text="{Binding Blake3MTHashValue}"/>
 
         </StackPanel>
     </Grid>

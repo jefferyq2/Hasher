@@ -15,6 +15,14 @@ namespace Hasher.HashClasses
         {
             Path = path;
             SetFileAttributes(Path);
+            if (RelativePath == "") RelativePath = Name;
+        }
+
+        public FileData(string path, string CurrentDirectory)
+        {
+            Path = path;
+            RelativePath = Path.Substring(CurrentDirectory.Length);
+            SetFileAttributes(Path);
         }
 
         public string Name
@@ -43,6 +51,12 @@ namespace Hasher.HashClasses
         }
         private string _Path = string.Empty;
 
+        public string RelativePath
+        {
+            get { return _RelativePath; }
+            set { _RelativePath = value; }
+        }
+        private string _RelativePath = string.Empty;
 
         public double SizeInKBs
         {
@@ -64,6 +78,14 @@ namespace Hasher.HashClasses
             set { _CreatedOn = value; }
         }
         private DateTime _CreatedOn;
+
+        public bool DoesFileExist()
+        {
+            FileInfo fileInfo = new FileInfo(Path);
+            if (fileInfo.Exists)
+                return true;
+            return false;
+        }
 
         private void SetFileAttributes(string filePath)
         {
