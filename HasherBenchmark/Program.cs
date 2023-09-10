@@ -6,7 +6,6 @@ namespace HasherBenchmark
     {
         static void Main(string[] args)
         {
-            //Console.WriteLine("Hello, World!");
             BenchmarkRunner.Run<HasherBenchmark>();
         }
     }

@@ -144,21 +144,38 @@ namespace Hasher.ViewModels
         /// </summary>
         /// <param name="fileSize">Gets fileSize in MBs</param>
         /// <returns></returns>
-        private int GetBufferSize(long fileSize)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fileSize">Gets fileSize in MBs</param>
+        /// <returns></returns>
+        private int GetBufferSize(double fileSize)
         {
-            if (fileSize < 1)
+            if (fileSize <= 1)
             {
-                return 512 * 512;
+                return 8192 * 8;
             }
-            else if (fileSize < 1024)
+            else if (fileSize <= 101) //100mb
             {
-                return 1024 * 1024;
+                return 1024 * 1024 * 2;
             }
-            else if (fileSize >= 1024)
+            else if (fileSize <= 512) //500mb
             {
-                return 1024 * 1024 * 8;
+                return 1024 * 512;
             }
-            return 0;
+            else if (fileSize <= 1024) //1GB
+            {
+                return 1024 * 1024 * 2;
+            }
+            else if (fileSize <= 1024 * 8) //8GB
+            {
+                return 1024 * 1024 * 2;
+            }
+            else
+            {
+                return 1024 * 1024 * 1 / 2;
+            }
+            
         }
 
 
@@ -258,11 +275,6 @@ namespace Hasher.ViewModels
             } while (bytesRead > 0);
 
             return Task.FromResult(blake3.Finalize().ToString());
-        }
-
-        partial void OnOverallProgressChanged(double value)
-        {
-            //System.Diagnostics.Debug.WriteLine(OverallProgress.ToString());
         }
     }
 }
