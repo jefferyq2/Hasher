@@ -31,19 +31,19 @@ namespace HasherBenchmark
             return hasher.CalculateMD5HashForFile(FILE_NAME);
         }
 
-        //[Benchmark]
-        //public void SHA256()
-        //{
-        //    hasher.BufferSize = getBufferSizeInBytes(BufferSize);
-        //    hasher.CalculateSHA256HashForFile(FILE_NAME);
-        //}
+        [Benchmark]
+        public void SHA256()
+        {
+            hasher.BufferSize = getBufferSizeInBytes(BufferSizeInKBs);
+            hasher.CalculateSHA256HashForFile(FILE_NAME);
+        }
 
-        //[Benchmark]
-        //public void Blake2()
-        //{
-        //    hasher.BufferSize = getBufferSizeInBytes(BufferSize);
-        //    hasher.CalculateBlake2bHashForFile(FILE_NAME);
-        //}
+        [Benchmark]
+        public void Blake2()
+        {
+            hasher.BufferSize = getBufferSizeInBytes(BufferSizeInKBs);
+            hasher.CalculateBlake2bHashForFile(FILE_NAME);
+        }
 
         [Benchmark]
         public Hash Blake3()

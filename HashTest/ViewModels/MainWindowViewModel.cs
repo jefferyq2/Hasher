@@ -15,7 +15,7 @@ using System.Diagnostics;
 using Blake3;
 using System.Data;
 
-namespace HashTest.ViewModels
+namespace HasherTest.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject
     {

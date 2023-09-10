@@ -1,4 +1,4 @@
-﻿using Hasher.Interfaces;
+﻿using HasherTest.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +7,7 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hasher.HashClasses
+namespace HasherTest.HashClasses
 {
     public class FileData : IFile
     {
@@ -38,8 +38,8 @@ namespace Hasher.HashClasses
             set 
             { 
                 _Size = value; 
-                SizeInKBs = Size/1024;
-                SizeInMBs = Size/(1024*1024);
+                SizeInKBs = (double)Size/1024;
+                SizeInMBs = (double)Size/(1024*1024);
             }
         }
         private long _Size;
@@ -57,6 +57,14 @@ namespace Hasher.HashClasses
             set { _RelativePath = value; }
         }
         private string _RelativePath = string.Empty;
+
+        public string? DirectoryPath
+        {
+            get { return _DirectoryPath; }
+            set { _DirectoryPath = value; }
+        }
+        private string? _DirectoryPath = string.Empty;
+
 
         public double SizeInKBs
         {
@@ -95,6 +103,7 @@ namespace Hasher.HashClasses
                 Name = fileInfo.Name;
                 Size = fileInfo.Length;
                 CreatedOn = fileInfo.CreationTime;
+                DirectoryPath = fileInfo.DirectoryName;
             }
         }
     }

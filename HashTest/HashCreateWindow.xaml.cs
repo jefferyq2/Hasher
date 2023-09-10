@@ -11,21 +11,19 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace HasherTest
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for HashFilesWindow.xaml
     /// </summary>
-    public partial class MainWindow
+    public partial class HashFilesWindow
     {
-        MainWindowViewModel viewModel = new MainWindowViewModel();
-
-        public MainWindow()
+        HashCreateViewModel _viewModel = new HashCreateViewModel();
+        public HashFilesWindow()
         {
-            this.DataContext = viewModel;
+            this.DataContext = _viewModel;
             InitializeComponent();
         }
     }

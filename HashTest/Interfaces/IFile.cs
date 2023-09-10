@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hasher.Interfaces
+namespace HasherTest.Interfaces
 {
     public interface IFile
     {

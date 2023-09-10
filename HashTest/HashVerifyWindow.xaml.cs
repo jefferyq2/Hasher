@@ -1,4 +1,4 @@
-﻿using Hasher.ViewModels;
+﻿using HasherTest.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,17 +13,18 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Hasher
+namespace HasherTest
 {
     /// <summary>
-    /// Interaction logic for HashFilesWindow.xaml
+    /// Interaction logic for HashVerifyWindow.xaml
     /// </summary>
-    public partial class HashFilesWindow
+    public partial class HashVerifyWindow 
     {
-        HashFilesViewModel _viewModel = new HashFilesViewModel();
-        public HashFilesWindow()
+        HashVerifyViewModel _viewModel = new HashVerifyViewModel();
+        public HashVerifyWindow()
         {
             this.DataContext = _viewModel;
+            //FileList.ItemsSource = _viewModel.FileStatuses;
             InitializeComponent();
         }
     }

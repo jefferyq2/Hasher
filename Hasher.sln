@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34003.232
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hasher", "HashTest\Hasher.csproj", "{C5B1183D-83C0-4954-928D-5405FF49639A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HasherTest", "HashTest\HasherTest.csproj", "{C5B1183D-83C0-4954-928D-5405FF49639A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HasherBenchmark", "HasherBenchmark\HasherBenchmark.csproj", "{FF167157-D7BD-483E-9354-EA27A85F59B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HasherBenchmark", "HasherBenchmark\HasherBenchmark.csproj", "{FF167157-D7BD-483E-9354-EA27A85F59B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
