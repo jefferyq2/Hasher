@@ -24,8 +24,10 @@ namespace HasherTest
         public HashVerifyWindow()
         {
             this.DataContext = _viewModel;
+
             //FileList.ItemsSource = _viewModel.FileStatuses;
             InitializeComponent();
+            FileStatusExpander.IsExpanded = false;
         }
     }
 }

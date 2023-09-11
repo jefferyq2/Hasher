@@ -21,8 +21,8 @@ namespace HasherTest.ViewModels
     {
         public HashVerifyViewModel()
         {
-            FileStatuses.Add(new FileStatus { FileName = "Hey",Status= SymbolRegular.CheckmarkCircle24 }); 
-            FileStatuses.Add(new FileStatus { FileName = "Hi", Status = SymbolRegular.DismissCircle24 });
+            //FileStatuses.Add(new FileStatus { FileName = "Hey",Status= SymbolRegular.CheckmarkCircle24 }); 
+            //FileStatuses.Add(new FileStatus { FileName = "Hi", Status = SymbolRegular.DismissCircle24 });
         }
 
         [ObservableProperty]
