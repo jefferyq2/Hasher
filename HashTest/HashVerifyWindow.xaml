@@ -31,14 +31,12 @@
         <ui:TitleBar Title="Verifying Hash Files" Grid.Row="0" />
         <Border
             Grid.Row="1"
-            Margin="5px"
             Padding="10"
             Background="{ui:ThemeResource CardStrokeColorDefaultBrush}"
             BorderBrush="{ui:ThemeResource ControlElevationBorderBrush}"
             BorderThickness="1,1,1,1"
             CornerRadius="8,8,8,8">
-
-            <StackPanel Margin="5px" HorizontalAlignment="Center">
+            <StackPanel HorizontalAlignment="Center">
                 <ui:Button
                     Margin="5px"
                     Command="{Binding VerifyHashesCommand}"

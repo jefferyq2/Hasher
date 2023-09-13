@@ -14,6 +14,7 @@ using Wpf.Ui.Controls;
 using CommunityToolkit.Mvvm.Input;
 using HasherTest.Interfaces;
 using System.Windows;
+using Microsoft.Win32;
 
 namespace HasherTest.ViewModels
 {
@@ -21,8 +22,9 @@ namespace HasherTest.ViewModels
     {
         public HashVerifyViewModel()
         {
-            //FileStatuses.Add(new FileStatus { FileName = "Hey",Status= SymbolRegular.CheckmarkCircle24 }); 
-            //FileStatuses.Add(new FileStatus { FileName = "Hi", Status = SymbolRegular.DismissCircle24 });
+            HashType = HashFunction.Blake3MultiThreaded;
+            Separator = '\t';
+            CommentChar = '#';
         }
 
         [ObservableProperty]
@@ -31,26 +33,50 @@ namespace HasherTest.ViewModels
         [ObservableProperty]
         private double currentProgress;
 
+        /// <summary>
+        /// File name to be displayed for the currently processing file.
+        /// </summary>
         [ObservableProperty]
-        private string currentFileName = "Current Progress";
+        private string currentFileName = string.Empty;
 
+        /// <summary>
+        /// Files with their hash verification status.
+        /// </summary>
         [ObservableProperty]
         private ObservableCollection<FileStatus> fileStatuses = new ObservableCollection<FileStatus>();
 
-        private Dictionary<string,string> FileHashes = new Dictionary<string,string>();
+        /// <summary>
+        /// List of files obtained from the hash file.
+        /// </summary>
+        private ObservableCollection<FileData> Files = new ObservableCollection<FileData>();
 
-        private List<FileData> Files = new List<FileData>();
+        /// <summary>
+        /// Separator used for separating the hash and filename in the hash file.
+        /// </summary>
+        [ObservableProperty]
+        private char separator;
+
+        /// <summary>
+        /// Character with which any commented lines could begin in the hash files.
+        /// </summary>
+        [ObservableProperty] 
+        private char commentChar;
+
+        /// <summary>
+        /// Type of hash to check against.
+        /// </summary>
+        [ObservableProperty]
+        private HashFunction hashType;
 
         [RelayCommand]
         public void VerifyHashes()
         {
             FileStatuses.Clear();
 
-            var dialog = new Microsoft.Win32.OpenFileDialog();
+            OpenFileDialog dialog = new OpenFileDialog();
             dialog.Multiselect = false;
-            dialog.FileName = "Document"; // Default file name
-                                          //dialog.DefaultExt = ".txt"; // Default file extension
-                                          //dialog.Filter = "Text documents (.txt)|*.txt";
+            //dialog.DefaultExt = ".txt"; // Default file extension
+            //dialog.Filter = "Text documents (.txt)|*.txt";
 
             bool? result = dialog.ShowDialog();
 
@@ -59,49 +85,64 @@ namespace HasherTest.ViewModels
             {
                 Task.Run(async () =>
                 {
-                    await Verify(dialog.FileName, "", HashFunction.Blake3MultiThreaded);
+                    await Verify(dialog.FileName, HashType);
                 });
             }
         }
 
-        public async Task Verify(string filePath, string extension, HashFunction hashingAlgorithm)
+        public async Task Verify(string hashFilePath, HashFunction hashingAlgorithm)
         {
-            FileData fileData = new FileData(filePath);
-            var file = File.ReadLines(filePath).ToList();
-            foreach(var f in file.Where(fi => fi[0] != '#'))
-            {
-                var fileAndHash = f.Split('\t');
-                FileHashes.Add(fileAndHash[1], fileAndHash[0]);
-            }
-
-            foreach (var fileNames in FileHashes.Keys)
-                Files.Add(new FileData(fileData.DirectoryPath + "\\" + fileNames));
+            GetDataFromHashFile(hashFilePath, hashingAlgorithm);
 
             double counter = 0;
             Double totalSize = Files.Sum(f => f.SizeInKBs);
 
             //go over the dictionary and perform stuff
-            foreach (var fh in FileHashes)
+            foreach (FileData file in Files)
             {
-                FileData fd = new FileData(fileData.DirectoryPath +"\\"+ fh.Key);
-                var hash = Task<string>.Run(async () =>
+                string calculatedHash = Task<string>.Run(async () =>
                 {
-                    return await CalculateBlake3MTHashForFile(fd);
+                    return await CalculateBlake3MTHashForFile(file);
                 }).Result;
-                if (fh.Value == hash)
+                if (file.Hash == calculatedHash)
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        FileStatuses.Add(new FileStatus { FileName = fd.RelativePath, Status = SymbolRegular.CheckmarkCircle24 });
+                        file.Status = SymbolRegular.CheckmarkCircle24;
+                        FileStatuses.Add(new FileStatus { FileName = file.RelativePath, Status = SymbolRegular.CheckmarkCircle24 });
                     });
                 else
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        FileStatuses.Add(new FileStatus { FileName = fd.RelativePath, Status = SymbolRegular.DismissCircle24 });
+                        file.Status = SymbolRegular.DismissCircle24;
+                        FileStatuses.Add(new FileStatus { FileName = file.RelativePath, Status = SymbolRegular.DismissCircle24 });
                     });
-                counter += fd.SizeInKBs;
+
+                counter += file.SizeInKBs;
                 //OverallProgress = ((double)counter / filePaths.Length) * 100;
                 OverallProgress = ((double)counter / totalSize) * 100;
 
+            }
+        }
+
+        private void GetDataFromHashFile(string hashFilePath, HashFunction hashingAlgorithm)
+        {
+            FileData hashFile = new FileData(hashFilePath);
+
+            List<string> fileLines = new List<string>();
+            try
+            {
+                //get the list of files without commented lines.
+                fileLines = File.ReadLines(hashFilePath).Where(fi => fi[0] != CommentChar).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            foreach (string line in fileLines)
+            {
+                string[] fileAndHash = line.Split(Separator, 2, StringSplitOptions.TrimEntries);
+                Files.Add(new FileData(hashFile.DirectoryPath + "\\" + fileAndHash[1]) { HashType = hashingAlgorithm, Hash = fileAndHash[0] });
             }
         }
 
@@ -231,6 +272,7 @@ namespace HasherTest.ViewModels
             }
         }
 
+        
 
         public class FileStatus
         {

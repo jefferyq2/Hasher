@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using Wpf.Ui.Controls;
 
 namespace HasherTest.HashClasses
 {
@@ -43,6 +44,19 @@ namespace HasherTest.HashClasses
             }
         }
         private long _Size;
+        public double SizeInKBs
+        {
+            get { return _SizeInKBs; }
+            set { _SizeInKBs = value; }
+        }
+        private double _SizeInKBs;
+
+        public double SizeInMBs
+        {
+            get { return _SizeInMBs; }
+            set { _SizeInMBs = value; }
+        }
+        private double _SizeInMBs;
 
         public string Path
         {
@@ -65,27 +79,34 @@ namespace HasherTest.HashClasses
         }
         private string? _DirectoryPath = string.Empty;
 
-
-        public double SizeInKBs
-        {
-            get { return _SizeInKBs; }
-            set { _SizeInKBs = value; }
-        }
-        private double _SizeInKBs;
-
-        public double SizeInMBs
-        {
-            get { return _SizeInMBs; }
-            set { _SizeInMBs = value; }
-        }
-        private double _SizeInMBs;
-
         public DateTime CreatedOn
         {
             get { return _CreatedOn; }
             set { _CreatedOn = value; }
         }
         private DateTime _CreatedOn;
+
+        public string Hash
+        {
+            get { return hash; }
+            set { hash = value; }
+        }
+        private string hash = string.Empty;
+
+        public HashFunction HashType
+        {
+            get { return hashType; }
+            set { hashType = value; }
+        }
+        private HashFunction hashType;
+
+        public SymbolRegular Status
+        {
+            get { return status; }
+            set { status = value; }
+        }
+        private SymbolRegular status = SymbolRegular.Empty;
+
 
         public bool DoesFileExist()
         {

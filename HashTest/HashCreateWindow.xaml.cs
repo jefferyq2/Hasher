@@ -25,6 +25,7 @@ namespace HasherTest
         {
             this.DataContext = _viewModel;
             InitializeComponent();
+            this.FileStatusExpander.IsExpanded = false;
         }
     }
 }
