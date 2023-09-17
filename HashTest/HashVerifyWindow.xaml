@@ -75,7 +75,7 @@
                                 <ColumnDefinition Width="1*" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="{Binding FileName}" />
-                            <ui:SymbolIcon Grid.Column="1" Symbol="{Binding Status}" />
+                            <ui:SymbolIcon Grid.Column="1" Symbol="{Binding StatusIcon}" />
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>

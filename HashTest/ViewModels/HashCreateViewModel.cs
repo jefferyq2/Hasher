@@ -13,6 +13,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using HasherTest.Interfaces;
+using System.Collections.ObjectModel;
 
 namespace HasherTest.ViewModels
 {
@@ -38,6 +39,13 @@ namespace HasherTest.ViewModels
         [ObservableProperty]
         private string fileNames = string.Empty;
 
+        /// <summary>
+        /// Files with their hash verification status.
+        /// </summary>
+        [ObservableProperty]
+        private ObservableCollection<FileStatus> fileStatuses = new ObservableCollection<FileStatus>();
+
+
         private List<string> fileHashWithNames = new List<string>();
 
         private string DirectoryPath = string.Empty;
@@ -54,9 +62,7 @@ namespace HasherTest.ViewModels
             //GetListOfFilesInDirectory(DirectoryPath);
             var dialog = new Microsoft.Win32.OpenFileDialog();
             dialog.Multiselect = true;
-            dialog.FileName = "Document"; // Default file name
-                                          //dialog.DefaultExt = ".txt"; // Default file extension
-                                          //dialog.Filter = "Text documents (.txt)|*.txt";
+            
 
             bool? result = dialog.ShowDialog();
 

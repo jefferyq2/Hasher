@@ -37,7 +37,7 @@ namespace HasherTest.ViewModels
         /// File name to be displayed for the currently processing file.
         /// </summary>
         [ObservableProperty]
-        private string currentFileName = string.Empty;
+        private string currentFileName;
 
         /// <summary>
         /// Files with their hash verification status.
@@ -94,12 +94,13 @@ namespace HasherTest.ViewModels
         {
             GetDataFromHashFile(hashFilePath, hashingAlgorithm);
 
-            double counter = 0;
-            Double totalSize = Files.Sum(f => f.SizeInKBs);
+            double runningTotalOfFileSize = 0;
+            double totalSizeOfFiles = Files.Sum(f => f.SizeInKBs);
 
             //go over the dictionary and perform stuff
             foreach (FileData file in Files)
             {
+                CurrentFileName = file.Name;
                 string calculatedHash = Task<string>.Run(async () =>
                 {
                     return await CalculateBlake3MTHashForFile(file);
@@ -108,18 +109,17 @@ namespace HasherTest.ViewModels
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         file.Status = SymbolRegular.CheckmarkCircle24;
-                        FileStatuses.Add(new FileStatus { FileName = file.RelativePath, Status = SymbolRegular.CheckmarkCircle24 });
+                        FileStatuses.Add(new FileStatus { FileName = file.RelativePath, StatusIcon = SymbolRegular.CheckmarkCircle24 });
                     });
                 else
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         file.Status = SymbolRegular.DismissCircle24;
-                        FileStatuses.Add(new FileStatus { FileName = file.RelativePath, Status = SymbolRegular.DismissCircle24 });
+                        FileStatuses.Add(new FileStatus { FileName = file.RelativePath, StatusIcon = SymbolRegular.DismissCircle24 });
                     });
 
-                counter += file.SizeInKBs;
-                //OverallProgress = ((double)counter / filePaths.Length) * 100;
-                OverallProgress = ((double)counter / totalSize) * 100;
+                runningTotalOfFileSize += file.SizeInKBs;
+                OverallProgress = (runningTotalOfFileSize / totalSizeOfFiles) * 100;
 
             }
         }
@@ -274,10 +274,5 @@ namespace HasherTest.ViewModels
 
         
 
-        public class FileStatus
-        {
-            public required string FileName { get; set; }
-            public SymbolRegular Status { get; set; }
-        }
     }
 }

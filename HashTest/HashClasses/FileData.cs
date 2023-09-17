@@ -16,7 +16,7 @@ namespace HasherTest.HashClasses
         {
             Path = path;
             SetFileAttributes(Path);
-            if (RelativePath == "") RelativePath = Name;
+            if (string.IsNullOrEmpty(RelativePath)) RelativePath = Name;
         }
 
         public FileData(string path, string CurrentDirectory)
@@ -26,6 +26,9 @@ namespace HasherTest.HashClasses
             SetFileAttributes(Path);
         }
 
+        /// <summary>
+        /// Name of the file.
+        /// </summary>
         public string Name
         {
             get { return _Name; }
@@ -33,6 +36,9 @@ namespace HasherTest.HashClasses
         }
         private string _Name = string.Empty;
 
+        /// <summary>
+        /// Size of the file in bytes.
+        /// </summary>
         public long Size
         {
             get { return _Size; }
@@ -44,6 +50,10 @@ namespace HasherTest.HashClasses
             }
         }
         private long _Size;
+
+        /// <summary>
+        /// Size of the file in Kilobytes.
+        /// </summary>
         public double SizeInKBs
         {
             get { return _SizeInKBs; }
@@ -51,6 +61,9 @@ namespace HasherTest.HashClasses
         }
         private double _SizeInKBs;
 
+        /// <summary>
+        /// Size of the file in Megabytes.
+        /// </summary>
         public double SizeInMBs
         {
             get { return _SizeInMBs; }
@@ -58,6 +71,9 @@ namespace HasherTest.HashClasses
         }
         private double _SizeInMBs;
 
+        /// <summary>
+        /// Absolute path of the file.
+        /// </summary>
         public string Path
         {
             get { return _Path; }
@@ -65,6 +81,9 @@ namespace HasherTest.HashClasses
         }
         private string _Path = string.Empty;
 
+        /// <summary>
+        /// Relative path of the file wrt current directory.
+        /// </summary>
         public string RelativePath
         {
             get { return _RelativePath; }
@@ -72,6 +91,9 @@ namespace HasherTest.HashClasses
         }
         private string _RelativePath = string.Empty;
 
+        /// <summary>
+        /// Path of the parent directory.
+        /// </summary>
         public string? DirectoryPath
         {
             get { return _DirectoryPath; }
@@ -79,6 +101,9 @@ namespace HasherTest.HashClasses
         }
         private string? _DirectoryPath = string.Empty;
 
+        /// <summary>
+        /// Date on which the file was created.
+        /// </summary>
         public DateTime CreatedOn
         {
             get { return _CreatedOn; }
@@ -86,6 +111,9 @@ namespace HasherTest.HashClasses
         }
         private DateTime _CreatedOn;
 
+        /// <summary>
+        /// Hash of the file.
+        /// </summary>
         public string Hash
         {
             get { return hash; }
@@ -93,6 +121,9 @@ namespace HasherTest.HashClasses
         }
         private string hash = string.Empty;
 
+        /// <summary>
+        /// Type of hash for the file.
+        /// </summary>
         public HashFunction HashType
         {
             get { return hashType; }
@@ -100,6 +131,9 @@ namespace HasherTest.HashClasses
         }
         private HashFunction hashType;
 
+        /// <summary>
+        /// Status of file.
+        /// </summary>
         public SymbolRegular Status
         {
             get { return status; }
@@ -107,7 +141,10 @@ namespace HasherTest.HashClasses
         }
         private SymbolRegular status = SymbolRegular.Empty;
 
-
+        /// <summary>
+        /// Checks for file existence.
+        /// </summary>
+        /// <returns><see langword="true"/> if file exists, <see langword="false"/> otherwise</returns>
         public bool DoesFileExist()
         {
             FileInfo fileInfo = new FileInfo(Path);
@@ -127,5 +164,6 @@ namespace HasherTest.HashClasses
                 DirectoryPath = fileInfo.DirectoryName;
             }
         }
+
     }
 }
