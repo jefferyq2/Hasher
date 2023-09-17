@@ -23,8 +23,8 @@ namespace HasherTest.ViewModels
         public HashVerifyViewModel()
         {
             HashType = HashFunction.Blake3MultiThreaded;
-            Separator = '\t';
-            CommentChar = '#';
+            Separator = '*';
+            CommentChar = ';';
         }
 
         [ObservableProperty]
@@ -100,10 +100,23 @@ namespace HasherTest.ViewModels
             //go over the dictionary and perform stuff
             foreach (FileData file in Files)
             {
+
                 CurrentFileName = file.Name;
+                if(file.DoesFileExist() == false)
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        file.Status = SymbolRegular.DismissCircle24;
+                        FileStatuses.Add(new FileStatus { FileName = file.RelativePath, StatusIcon = SymbolRegular.DismissCircle24 });
+                    });
+                    continue;
+                }
                 string calculatedHash = Task<string>.Run(async () =>
                 {
-                    return await CalculateBlake3MTHashForFile(file);
+                    IHash hash_MD5 = new Hash_MD5();
+                    hash_MD5.ProgressUpdater += UpdateProgress;
+                    return hash_MD5.HashFile(file, GetBufferSize(file.SizeInMBs));
+                    //return await CalculateBlake3MTHashForFile(file);
                 }).Result;
                 if (file.Hash == calculatedHash)
                     Application.Current.Dispatcher.Invoke(() =>
@@ -122,6 +135,11 @@ namespace HasherTest.ViewModels
                 OverallProgress = (runningTotalOfFileSize / totalSizeOfFiles) * 100;
 
             }
+        }
+
+        public void UpdateProgress(object? sender,double progress)
+        {
+            CurrentProgress = progress;
         }
 
         private void GetDataFromHashFile(string hashFilePath, HashFunction hashingAlgorithm)
@@ -144,99 +162,6 @@ namespace HasherTest.ViewModels
                 string[] fileAndHash = line.Split(Separator, 2, StringSplitOptions.TrimEntries);
                 Files.Add(new FileData(hashFile.DirectoryPath + "\\" + fileAndHash[1]) { HashType = hashingAlgorithm, Hash = fileAndHash[0] });
             }
-        }
-
-        public Task<string> CalculateMD5HashForFile(FileData file)
-        {
-            IDigest md5Digest = new MD5Digest();
-            using (var fileStream = File.OpenRead(file.Path))
-            using (var digestStream = new DigestStream(fileStream, md5Digest, null))
-            {
-
-                byte[] buffer = new byte[GetBufferSize(file.SizeInMBs)];
-                long bytesRead;
-                do
-                {
-                    bytesRead = digestStream.Read(buffer, 0, buffer.Length);
-                    CurrentProgress = (double)fileStream.Position / fileStream.Length * 100;
-                } while (bytesRead > 0);
-            }
-
-            byte[] hashBytes = new byte[md5Digest.GetDigestSize()];
-            md5Digest.DoFinal(hashBytes, 0);
-
-            return Task.FromResult(BitConverter.ToString(hashBytes).Replace("-", "").ToLower());
-        }
-
-        public Task<string> CalculateSHA256HashForFile(FileData file)
-        {
-            IDigest sha256Digest = new Sha256Digest();
-
-            using (var fileStream = File.OpenRead(file.Path))
-            using (var digestStream = new DigestStream(fileStream, sha256Digest, null))
-            {
-                byte[] buffer = new byte[GetBufferSize(file.SizeInMBs)];
-                int bytesRead;
-                do
-                {
-                    bytesRead = digestStream.Read(buffer, 0, buffer.Length);
-                } while (bytesRead > 0);
-            }
-
-            byte[] hashBytes = new byte[sha256Digest.GetDigestSize()];
-            sha256Digest.DoFinal(hashBytes, 0);
-            return Task.FromResult(BitConverter.ToString(hashBytes).Replace("-", "").ToLower());
-        }
-
-        public Task<string> CalculateBlake2bHashForFile(FileData file)
-        {
-            IDigest blake2bDigest = new Blake2bDigest(256);
-
-            using (var fileStream = File.OpenRead(file.Path))
-            using (var digestStream = new DigestStream(fileStream, blake2bDigest, null))
-            {
-                byte[] buffer = new byte[GetBufferSize(file.SizeInMBs)];
-                int bytesRead;
-                do
-                {
-                    bytesRead = digestStream.Read(buffer, 0, buffer.Length);
-                } while (bytesRead > 0);
-            }
-
-            byte[] hashBytes = new byte[blake2bDigest.GetDigestSize()];
-            blake2bDigest.DoFinal(hashBytes, 0);
-            return Task.FromResult(BitConverter.ToString(hashBytes).Replace("-", "").ToLower());
-        }
-
-        public Task<string> CalculateBlake3HashForFile(FileData file)
-        {
-            using Blake3.Hasher blake3 = Blake3.Hasher.New();
-            using FileStream fileStream = File.OpenRead(file.Path);
-            byte[] buffer = new byte[GetBufferSize(file.SizeInMBs)];
-            int bytesRead;
-            do
-            {
-                bytesRead = fileStream.Read(buffer, 0, buffer.Length);
-                blake3.Update(buffer.AsSpan(0, bytesRead));
-            } while (bytesRead > 0);
-
-            return Task.FromResult(blake3.Finalize().ToString());
-        }
-
-        public Task<string> CalculateBlake3MTHashForFile(FileData file)
-        {
-            using Blake3.Hasher blake3 = Blake3.Hasher.New();
-            using FileStream fileStream = File.OpenRead(file.Path);
-            byte[] buffer = new byte[GetBufferSize(file.SizeInMBs)];
-            int bytesRead;
-            do
-            {
-                bytesRead = fileStream.Read(buffer, 0, buffer.Length);
-                blake3.UpdateWithJoin(buffer.AsSpan(0, bytesRead));
-                CurrentProgress = (double)fileStream.Position / fileStream.Length * 100;
-            } while (bytesRead > 0);
-
-            return Task.FromResult(blake3.Finalize().ToString());
         }
 
         /// <summary>

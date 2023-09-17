@@ -14,8 +14,7 @@ namespace HasherTest.HashClasses
     {
         public FileData(string path)
         {
-            Path = path;
-            SetFileAttributes(Path);
+            SetFileAttributes(path);
             if (string.IsNullOrEmpty(RelativePath)) RelativePath = Name;
         }
 
@@ -156,12 +155,17 @@ namespace HasherTest.HashClasses
         private void SetFileAttributes(string filePath)
         {
             FileInfo fileInfo = new FileInfo(filePath);
+            Name = fileInfo.Name;
+            DirectoryPath = fileInfo.DirectoryName;
+            Path = fileInfo.FullName;
             if (fileInfo.Exists)
             {
-                Name = fileInfo.Name;
                 Size = fileInfo.Length;
                 CreatedOn = fileInfo.CreationTime;
-                DirectoryPath = fileInfo.DirectoryName;
+            }
+            else
+            {
+
             }
         }
 

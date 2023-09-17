@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HasherTest.HashClasses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,8 @@ namespace HasherTest.Interfaces
 {
     public interface IHash
     {
-        public string HashFile(IFile file, long bufferSize);
+        public double CurrentProgress { get; set; }
+        public EventHandler<double>? ProgressUpdater { get; set; }
+        public abstract string HashFile(FileData file, long bufferSize);
     }
 }
