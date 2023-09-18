@@ -68,10 +68,17 @@ namespace HasherTest.ViewModels
         [ObservableProperty]
         private HashFunction hashType;
 
+        [ObservableProperty]
+        private System.Windows.Media.Brush statusIconColor;
+
         [RelayCommand]
         public void VerifyHashes()
         {
+            //FileStatuses = new ObservableCollection<FileStatus>();
+            Files.Clear();
             FileStatuses.Clear();
+            OverallProgress = 0;
+            CurrentProgress = 0;
 
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Multiselect = false;
@@ -107,7 +114,7 @@ namespace HasherTest.ViewModels
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         file.Status = SymbolRegular.DismissCircle24;
-                        FileStatuses.Add(new FileStatus { FileName = file.RelativePath, StatusIcon = SymbolRegular.DismissCircle24 });
+                        FileStatuses.Add(new FileStatus(fileName: file.RelativePath, SymbolRegular.DismissCircle24, "File not found.") { StatusIconColor = System.Windows.Media.Brushes.Red });
                     });
                     continue;
                 }
@@ -122,13 +129,16 @@ namespace HasherTest.ViewModels
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         file.Status = SymbolRegular.CheckmarkCircle24;
-                        FileStatuses.Add(new FileStatus { FileName = file.RelativePath, StatusIcon = SymbolRegular.CheckmarkCircle24 });
+                        FileStatuses.Add(new FileStatus(file.RelativePath, SymbolRegular.CheckmarkCircle24, "OK") { StatusIconColor = System.Windows.Media.Brushes.Green } );
+                        StatusIconColor = System.Windows.Media.Brushes.Green;
                     });
                 else
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         file.Status = SymbolRegular.DismissCircle24;
-                        FileStatuses.Add(new FileStatus { FileName = file.RelativePath, StatusIcon = SymbolRegular.DismissCircle24 });
+                        FileStatuses.Add(new FileStatus(file.RelativePath, SymbolRegular.DismissCircle24, "Hash Mismatch") { StatusIconColor = System.Windows.Media.Brushes.Red });
+                        StatusIconColor = System.Windows.Media.Brushes.Red;
+
                     });
 
                 runningTotalOfFileSize += file.SizeInKBs;

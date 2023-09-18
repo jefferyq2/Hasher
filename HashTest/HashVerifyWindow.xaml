@@ -73,9 +73,15 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="9*" />
                                 <ColumnDefinition Width="1*" />
+                                <ColumnDefinition Width="3*" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="{Binding FileName}" />
-                            <ui:SymbolIcon Grid.Column="1" Symbol="{Binding StatusIcon}" />
+                            <ui:SymbolIcon
+                                Grid.Column="1"
+                                Filled="True"
+                                Foreground="{Binding StatusIconColor}"
+                                Symbol="{Binding StatusIcon}" />
+                            <TextBlock Grid.Column="2" Text="{Binding StatusMessage}" />
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
