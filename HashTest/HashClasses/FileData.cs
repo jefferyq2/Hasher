@@ -133,12 +133,12 @@ namespace HasherTest.HashClasses
         /// <summary>
         /// Status of file.
         /// </summary>
-        public SymbolRegular Status
-        {
-            get { return status; }
-            set { status = value; }
-        }
-        private SymbolRegular status = SymbolRegular.Empty;
+        //public SymbolRegular Status
+        //{
+        //    get { return status; }
+        //    set { status = value; }
+        //}
+        //private SymbolRegular status = SymbolRegular.Empty;
 
         /// <summary>
         /// Checks for file existence.

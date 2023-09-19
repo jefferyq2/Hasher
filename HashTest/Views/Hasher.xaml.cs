@@ -13,15 +13,15 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace HasherTest
+namespace HasherTest.Views
 {
     /// <summary>
     /// Interaction logic for HashVerifyWindow.xaml
     /// </summary>
-    public partial class HashVerifyWindow 
+    public partial class Hasher 
     {
-        HashVerifyViewModel _viewModel = new HashVerifyViewModel();
-        public HashVerifyWindow()
+        HasherViewModel _viewModel = new HasherViewModel();
+        public Hasher()
         {
             this.DataContext = _viewModel;
 
