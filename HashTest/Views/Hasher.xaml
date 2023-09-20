@@ -80,16 +80,25 @@
                     Margin="5,0,5,0"
                     VerticalAlignment="Center"
                     FontSize="12">
-                    HashType
+                    Hash Type
                 </TextBlock>
-                <ComboBox Width="Auto" Margin="5,0,5,0" />
+                <ComboBox
+                    Width="Auto"
+                    Margin="5,0,5,0"
+                    ItemsSource="{Binding}"
+                    SelectedValue="{Binding HashType}" />
                 <TextBlock
                     Margin="5,0,5,0"
                     VerticalAlignment="Center"
                     FontSize="12">
                     BufferSize
                 </TextBlock>
-                <ComboBox Width="Auto" Margin="5,0,5,0" />
+                <ComboBox
+                    Width="Auto"
+                    Margin="5,0,5,0"
+                    ItemsSource="{Binding BufferSizes.Keys}"
+                    SelectedIndex="5"
+                    SelectedValue="{Binding BufferSize}" />
             </WrapPanel>
         </Grid>
 

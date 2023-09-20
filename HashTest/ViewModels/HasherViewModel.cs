@@ -32,6 +32,22 @@ namespace HasherTest.ViewModels
             CommentChar = ';';
         }
 
+        [ObservableProperty]
+        private Dictionary<string, int> bufferSizes = new Dictionary<string, int>() { 
+            ["32kb"] = 1024 * 32, 
+            ["64kb"] = 1024 * 64,
+            ["128kb"] = 1024 * 128,
+            ["256kb"] = 1024 * 256,
+            ["512kb"] = 1024 * 512,
+            ["1MB"] = 1024 * 1024 * 1,
+            ["2MB"] = 1024 * 1024 * 2,
+            ["4MB"] = 1024 * 1024 * 4,
+            ["8MB"] = 1024 * 1024 * 8,
+        };
+
+        [ObservableProperty]
+        private string bufferSize;
+
         #region ProgressBars
 
         /// <summary>
@@ -78,6 +94,7 @@ namespace HasherTest.ViewModels
         /// </summary>
         [ObservableProperty]
         private HashFunction hashType;
+
 
         #endregion
 
